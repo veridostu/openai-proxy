@@ -1,11 +1,20 @@
+// index.js
 const express = require('express');
-const fetch = require('node-fetch');
-require('dotenv').config();
+const bodyParser = require('body-parser');
+const fetch = require('node-fetch'); // fetch için
+require('dotenv').config(); // .env dosyasını yükler
 
 const app = express();
-app.use(express.json());
+const PORT = process.env.PORT || 3000;
 
-app.post('/api/solve', async (req, res) => {
+app.use(bodyParser.json());
+
+// Örnek middleware'ler (senin tanımlarına göre değiştirilebilir)
+const requireAuthOptional = (req, res, next) => { next(); }; 
+const rateLimit = () => (req, res, next) => { next(); };
+
+// /api/solve endpoint
+app.post('/api/solve', requireAuthOptional, rateLimit(), async (req, res) => {
   try {
     const r = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -15,13 +24,15 @@ app.post('/api/solve', async (req, res) => {
       },
       body: JSON.stringify(req.body)
     });
-    const data = await r.text();
-    res.status(r.status).send(data);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send({ error: 'Server error' });
+
+    const text = await r.text(); // JSON olarak almak istersen .json() kullanabilirsin
+    res.status(r.status).send(text);
+  } catch (error) {
+    console.error('Hata:', error);
+    res.status(500).json({ error: 'OpenAI API çağrısında hata oluştu' });
   }
 });
 
-const port = process.env.PORT || 8080;
-app.listen(port, () => console.log(`Server listening on port ${port}`));
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+});
