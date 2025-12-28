@@ -17,7 +17,8 @@ const rateLimit = () => (req, res, next) => { next(); };
 // /api/solve endpoint
 app.post('/api/solve/*', requireAuthOptional, rateLimit(), async (req, res) => {
   try {
-    const r = await fetch('https://api.openai.com/v1' + req.path.replace('/api/solve', ''), {
+    const openaiPath = req.path.replace('/api/solve', ''); // /chat/completions
+    const r = await fetch('https://api.openai.com/v1' + openaiPath, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
@@ -33,4 +34,3 @@ app.post('/api/solve/*', requireAuthOptional, rateLimit(), async (req, res) => {
     res.status(500).json({ error: 'OpenAI API call failed' });
   }
 });
-
