@@ -17,7 +17,7 @@ const rateLimit = () => (req, res, next) => { next(); };
 // /api/solve endpoint
 app.post('/api/solve/*', requireAuthOptional, rateLimit(), async (req, res) => {
   try {
-    const openaiPath = req.path.replace('/api/solve', ''); // /chat/completions
+    const openaiPath = req.path.replace('/chat/completions', ''); // /chat/completions
     const r = await fetch('https://api.openai.com/v1' + openaiPath, {
       method: 'POST',
       headers: {
