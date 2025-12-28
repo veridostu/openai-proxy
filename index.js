@@ -8,6 +8,8 @@ const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
+const cors = require('cors');
+app.use(cors()); // tüm domainlere izin verir
 // Middleware örnekleri
 const requireAuthOptional = (req, res, next) => { next(); };
 const rateLimit = () => (req, res, next) => { next(); };
