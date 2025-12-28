@@ -15,9 +15,9 @@ const requireAuthOptional = (req, res, next) => { next(); };
 const rateLimit = () => (req, res, next) => { next(); };
 
 // /api/solve endpoint
-app.post('/api/solve', requireAuthOptional, rateLimit(), async (req, res) => {
+app.post('/api/solve/*', requireAuthOptional, rateLimit(), async (req, res) => {
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const r = await fetch('https://api.openai.com/v1' + req.path.replace('/api/solve', ''), {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
@@ -26,15 +26,11 @@ app.post('/api/solve', requireAuthOptional, rateLimit(), async (req, res) => {
       body: JSON.stringify(req.body)
     });
 
-    const data = await response.json();
-    res.status(response.status).json(data);
-
+    const text = await r.text();
+    res.status(r.status).send(text);
   } catch (error) {
-    console.error('OpenAI API çağrısında hata:', error);
-    res.status(500).json({ error: 'OpenAI API çağrısında hata oluştu' });
+    console.error(error);
+    res.status(500).json({ error: 'OpenAI API call failed' });
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
