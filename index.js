@@ -1,7 +1,6 @@
-import express from 'express';
-import fetch from 'node-fetch';
-import dotenv from 'dotenv';
-dotenv.config();
+const express = require('express');
+const fetch = require('node-fetch');
+require('dotenv').config();
 
 const app = express();
 app.use(express.json());
@@ -9,10 +8,10 @@ app.use(express.json());
 app.post('/api/solve', async (req, res) => {
   try {
     const r = await fetch('https://api.openai.com/v1/chat/completions', {
-      method:'POST',
-      headers:{
+      method: 'POST',
+      headers: {
         'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-        'Content-Type':'application/json'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(req.body)
     });
@@ -20,7 +19,7 @@ app.post('/api/solve', async (req, res) => {
     res.status(r.status).send(data);
   } catch (err) {
     console.error(err);
-    res.status(500).send({error: 'Server error'});
+    res.status(500).send({ error: 'Server error' });
   }
 });
 
